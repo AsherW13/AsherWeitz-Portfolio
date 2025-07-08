@@ -3,7 +3,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { Bars3Icon, XMarkIcon, EnvelopeIcon } from '@heroicons/vue/24/outline'
 
 const menuOpen = ref(false)
-const showNavbar = ref(false)
+const showShadow = ref(false)
 
 const toggleMenu = () => {
   menuOpen.value = !menuOpen.value
@@ -18,7 +18,7 @@ const scrollToSection = (id) => {
 }
 
 const handleScroll = () => {
-  showNavbar.value = window.scrollY > 50
+  showShadow.value = window.scrollY > 50
 }
 
 onMounted(() => {
@@ -33,22 +33,22 @@ onUnmounted(() => {
 <template>
     <nav
     :class="[
-      'w-full fixed top-0 left-0 z-50 bg-gray-50 shadow transform transition-transform duration-300',
-      showNavbar ? 'translate-y-0' : '-translate-y-full'
+      'w-full fixed top-0 left-0 z-50 bg-gray-50 transition-shadow duration-300',
+      showShadow ? 'shadow' : ''
     ]"
     >
-    <div class="flex items-center justify-center px-6 py-4">
+    <div class="flex items-center justify-between px-6 py-4">
 
-      <!-- <div class="text-2xl font-bold">Asher Weitz</div> -->
+      <div class="w-1/3 font-bold text-2xl pl-10">Asher Weitz</div>
 
-      <ul class="hidden md:flex space-x-8 text-lg">
-        <li><button @click="scrollToSection('about')" class="hover:text-indigo-500">About</button></li>
-        <li><button @click="scrollToSection('projects')" class="hover:text-indigo-500">Projects</button></li>
-        <li><button @click="scrollToSection('experience')" class="hover:text-indigo-500">Experience</button></li>
-        <li><button @click="scrollToSection('contact')" class="hover:text-indigo-500">Contact</button></li>
+      <ul class="hidden md:flex justify-center w-1/3 space-x-8 text-xl">
+        <li><button @click="scrollToSection('about')" class="hover:text-indigo-500 hover:underline hover:underline-offset-3">About</button></li>
+        <li><button @click="scrollToSection('projects')" class="hover:text-indigo-500 hover:underline hover:underline-offset-3">Projects</button></li>
+        <li><button @click="scrollToSection('experience')" class="hover:text-indigo-500 hover:underline hover:underline-offset-3">Experience</button></li>
+        <li><button @click="scrollToSection('contact')" class="hover:text-indigo-500 hover:underline hover:underline-offset-3">Contact</button></li>
       </ul>
 
-      <!-- <div class="hidden md:flex items-center space-x-4">
+      <div class="w-1/3 hidden md:flex justify-end items-center space-x-4 pr-10">
         <a href="https://linkedin.com/in/asher-weitz" target="_blank" aria-label="LinkedIn">
           <FontAwesomeIcon :icon="['fab', 'linkedin']"  size="2x" class="w-6 h-6 hover:text-indigo-500" />
         </a>
@@ -58,7 +58,7 @@ onUnmounted(() => {
         <a href="mailto:asherfweitz@gmail.com" aria-label="Email">
           <EnvelopeIcon class="w-8 h-8 hover:text-indigo-500" />
         </a>
-      </div> -->
+      </div>
 
       <button @click="toggleMenu" class="md:hidden focus:outline-none">
         <Bars3Icon v-if="!menuOpen" class="w-6 h-6" />

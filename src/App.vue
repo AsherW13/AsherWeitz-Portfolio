@@ -8,7 +8,7 @@ import Projects from './components/Projects.vue';
   <div class="p-10 px-20 bg-gray-50">
     <NavBar />
   </div>
-  <main class="pt-24 bg-gray-50">
+  <main class="bg-gray-50">
     <section id="about" class="scroll-mt-24">
       <About />
     </section>
