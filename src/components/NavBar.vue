@@ -61,8 +61,8 @@ onUnmounted(() => {
       </div>
 
       <button @click="toggleMenu" class="md:hidden focus:outline-none">
-        <Bars3Icon v-if="!menuOpen" class="w-6 h-6" />
-        <XMarkIcon v-else class="w-6 h-6" />
+        <Bars3Icon v-if="!menuOpen" class="w-8 h-8" />
+        <XMarkIcon v-else class="w-8 h-8" />
       </button>
     </div>
 
