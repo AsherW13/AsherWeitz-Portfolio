@@ -1,7 +1,8 @@
 <script setup>
 import NavBar from './components/NavBar.vue'
 import About from './components/About.vue'
-import Projects from './components/Projects.vue';
+import Projects from './components/Projects.vue'
+import Contact from './components/Contact.vue'
 </script>
 
 <template>
@@ -15,11 +16,8 @@ import Projects from './components/Projects.vue';
     <section id="projects" class="scroll-mt-24">
       <Projects />
     </section>
-    <section id="experience" class="scroll-mt-24">
-      <!-- <About /> -->
-    </section>
     <section id="contact" class="scroll-mt-24">
-      <!-- <About /> -->
+      <Contact />
     </section>
   </main>
 </template>

@@ -44,7 +44,6 @@ onUnmounted(() => {
       <ul class="hidden md:flex justify-center w-1/3 space-x-8 text-xl">
         <li><button @click="scrollToSection('about')" class="hover:text-indigo-500 hover:underline hover:underline-offset-3">About</button></li>
         <li><button @click="scrollToSection('projects')" class="hover:text-indigo-500 hover:underline hover:underline-offset-3">Projects</button></li>
-        <li><button @click="scrollToSection('experience')" class="hover:text-indigo-500 hover:underline hover:underline-offset-3">Experience</button></li>
         <li><button @click="scrollToSection('contact')" class="hover:text-indigo-500 hover:underline hover:underline-offset-3">Contact</button></li>
       </ul>
 
@@ -69,7 +68,6 @@ onUnmounted(() => {
     <div v-if="menuOpen" class="md:hidden px-6 pb-4 flex flex-col space-y-4 text-lg">
       <button @click="scrollToSection('about')" class="text-left hover:text-indigo-500">About</button>
       <button @click="scrollToSection('projects')" class="text-left hover:text-indigo-500">Projects</button>
-      <button @click="scrollToSection('experience')" class="text-left hover:text-indigo-500">Experience</button>
       <button @click="scrollToSection('contact')" class="text-left hover:text-indigo-500">Contact</button>
       <div class="flex space-x-4 mt-2">
         <a href="https://linkedin.com/in/asher-weitz" target="_blank" aria-label="LinkedIn">

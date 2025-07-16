@@ -9,7 +9,7 @@
 
     <p class="text-lg text-gray-700 text-center mb:text-left">
       Hi! I'm Asher Weitz, a software engineer passionate about full stack development and embedded software design. 
-      Graduated from Gonzaga University (Magna Cum Laude) in May 2025. 
+      Graduated from Gonzaga University (Magna Cum Laude) in May 2025.  
     </p>
   </div>
   <a
