@@ -120,7 +120,9 @@ const submitForm = async () => {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      ...form.value,
+      name: form.value.name,
+      email: form.value.email,
+      message: form.value.message,
       recaptcha: token,
     }),
   })

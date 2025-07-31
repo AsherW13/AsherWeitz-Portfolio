@@ -28,6 +28,7 @@ def contact():
     form = ContactForm(data=data)
 
     if not form.validate():
+        print("Validation errors:", form.errors)
         return jsonify({"message": "Validation failed", "errors": form.errors}), 400
 
     recaptcha_token = data.get("recaptcha", "")
