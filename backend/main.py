@@ -10,6 +10,10 @@ from dotenv import load_dotenv
 from form import ContactForm
 from flask_wtf.csrf import CSRFProtect, CSRFError
 
+import logging
+
+logging.basicConfig(level=logging.INFO)
+
 load_dotenv()
 
 app = Flask(__name__)
@@ -21,15 +25,17 @@ limiter = Limiter(get_remote_address, app=app, default_limits=["2 per hour"])
 
 csrf = CSRFProtect(app)
 
-@csrf.exempt
 @app.route("/api/contact", methods=["POST"])
 @limiter.limit("2 per hour")
 def contact():
     data = request.get_json()
+
+    app.logger.info(f"Incoming JSON data: {data}")
+
     form = ContactForm(data=data)
 
     if not form.validate():
-        print("Validation errors:", form.errors)
+        app.logger.error(f"Validation errors: {form.errors}")
         return jsonify({"message": "Validation failed", "errors": form.errors}), 400
 
     recaptcha_token = data.get("recaptcha", "")
