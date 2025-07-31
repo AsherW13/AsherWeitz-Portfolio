@@ -6,3 +6,4 @@ WTForms
 python-dotenv
 requests
 gunicorn
+email_validator
