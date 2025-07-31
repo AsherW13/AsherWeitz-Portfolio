@@ -8,7 +8,7 @@ from flask_limiter.util import get_remote_address
 from email.message import EmailMessage
 from dotenv import load_dotenv
 from form import ContactForm
-from flask_wtf.csrf import CSRFProtect
+from flask_wtf.csrf import CSRFProtect, CSRFError
 
 load_dotenv()
 
@@ -17,12 +17,13 @@ app.secret_key = os.environ.get('SECRET_KEY')
 
 CORS(app)
 
-limiter = Limiter(get_remote_address, app=app, default_limits=["5 per hour"])
+limiter = Limiter(get_remote_address, app=app, default_limits=["2 per hour"])
 
 csrf = CSRFProtect(app)
 
+@csrf.exempt
 @app.route("/api/contact", methods=["POST"])
-@limiter.limit("5 per hour")
+@limiter.limit("2 per hour")
 def contact():
     data = request.get_json()
     form = ContactForm(data=data)
