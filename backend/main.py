@@ -7,7 +7,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from email.message import EmailMessage
 from dotenv import load_dotenv
-from forms import ContactForm
+from form import ContactForm
 
 load_dotenv()
 app = Flask(__name__)
