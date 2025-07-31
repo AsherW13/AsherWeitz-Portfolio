@@ -98,9 +98,6 @@ import { ref, onMounted } from 'vue'
 const form = ref({ name: '', email: '', message: '' })
 const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY
 
-console.log('reCAPTCHA siteKey:', siteKey)
-
-
 onMounted(() => {
   const script = document.createElement('script')
   script.src = "https://www.google.com/recaptcha/api.js?render=explicit"
