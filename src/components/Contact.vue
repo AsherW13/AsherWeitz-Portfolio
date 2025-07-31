@@ -38,7 +38,7 @@
               </div>
 
               <div class="mb-6">
-                  <div class="g-recaptcha" :data-sitekey="siteKey"></div>
+                  <div id="recaptcha" class="g-recaptcha"></div>
               </div>
 
               <div>
@@ -95,16 +95,20 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 
+const form = ref({ name: '', email: '', message: '' })
 const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY
-const form = ref({
-  name: '',
-  email: '',
-  message: '',
-})
+
+console.log('reCAPTCHA siteKey:', siteKey)
+
 
 onMounted(() => {
   const script = document.createElement('script')
-  script.src = 'https://www.google.com/recaptcha/api.js'
+  script.src = "https://www.google.com/recaptcha/api.js?render=explicit"
+  script.async = true
+  script.defer = true
+  script.onload = () => {
+    grecaptcha.render('recaptcha', { sitekey: siteKey })
+  }
   document.head.appendChild(script)
 })
 
@@ -119,22 +123,18 @@ const submitForm = async () => {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      name: form.value.name,
-      email: form.value.email,
-      message: form.value.message,
+      ...form.value,
       recaptcha: token,
-    })
+    }),
   })
 
   const data = await response.json()
-
   if (response.ok) {
     alert(data.message)
     form.value = { name: '', email: '', message: '' }
     grecaptcha.reset()
   } else {
-    const err = data.errors || {}
-    alert(data.message + (Object.values(err).join(' ') || ''))
+    alert(data.message || 'Submission failed')
   }
 }
 </script>
