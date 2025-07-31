@@ -8,35 +8,39 @@
 
         <div class="w-full max-w-[570px]">
           <div class="relative p-8 bg-white rounded-lg shadow-lg dark:bg-dark-2 sm:p-12">
-            <form>
+            <form @submit.prevent="submitForm">
               <div class="mb-6">
                 <input
+                  v-model="form.name"
                   type="text"
                   placeholder="Your Name"
                   class="border-stroke dark:border-dark-3 dark:text-dark-6 dark:bg-dark text-body-color focus:border-primary w-full rounded border py-3 px-[14px] text-base outline-none"
+                  required
                 />
               </div>
               <div class="mb-6">
                 <input
+                  v-model="form.email"
                   type="email"
                   placeholder="Your Email"
                   class="border-stroke dark:border-dark-3 dark:text-dark-6 dark:bg-dark text-body-color focus:border-primary w-full rounded border py-3 px-[14px] text-base outline-none"
-                />
-              </div>
-              <div class="mb-6">
-                <input
-                  type="text"
-                  placeholder="Your Phone"
-                  class="border-stroke dark:border-dark-3 dark:text-dark-6 dark:bg-dark text-body-color focus:border-primary w-full rounded border py-3 px-[14px] text-base outline-none"
+                  required
                 />
               </div>
               <div class="mb-6">
                 <textarea
+                  v-model="form.message"
                   rows="6"
                   placeholder="Your Message"
                   class="border-stroke dark:border-dark-3 dark:text-dark-6 dark:bg-dark text-body-color focus:border-primary w-full resize-none rounded border py-3 px-[14px] text-base outline-none"
+                  required
                 ></textarea>
               </div>
+
+              <div class="mb-6">
+                  <div class="g-recaptcha" :data-sitekey="siteKey"></div>
+              </div>
+
               <div>
                 <button
                   type="submit"
@@ -89,7 +93,50 @@
 
 
 <script setup>
+import { ref, onMounted } from 'vue'
 
+const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY
+const form = ref({
+  name: '',
+  email: '',
+  message: '',
+})
+
+onMounted(() => {
+  const script = document.createElement('script')
+  script.src = 'https://www.google.com/recaptcha/api.js'
+  document.head.appendChild(script)
+})
+
+const submitForm = async () => {
+  const token = grecaptcha.getResponse()
+  if (!token) {
+    alert('Please complete the reCAPTCHA.')
+    return
+  }
+
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/api/contact`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name: form.value.name,
+      email: form.value.email,
+      message: form.value.message,
+      recaptcha: token,
+    })
+  })
+
+  const data = await response.json()
+
+  if (response.ok) {
+    alert(data.message)
+    form.value = { name: '', email: '', message: '' }
+    grecaptcha.reset()
+  } else {
+    const err = data.errors || {}
+    alert(data.message + (Object.values(err).join(' ') || ''))
+  }
+}
 </script>
 
 <style scoped>
