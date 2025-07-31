@@ -25,12 +25,11 @@ limiter = Limiter(get_remote_address, app=app, default_limits=["2 per hour"])
 
 csrf = CSRFProtect(app)
 
+@csrf.exempt
 @app.route("/api/contact", methods=["POST"])
 @limiter.limit("2 per hour")
 def contact():
     data = request.get_json()
-
-    app.logger.info(f"Incoming JSON data: {data}")
 
     form = ContactForm(data=data)
 
