@@ -23,7 +23,7 @@ CORS(app)
 
 limiter = Limiter(get_remote_address, app=app, default_limits=["2 per hour"])
 
-csrf = CSRFProtect(app)
+csrf = CSRFProtect(app, origins=["https://asherweitz-portfolio.netlify.app"])
 
 @csrf.exempt
 @app.route("/api/contact", methods=["POST"])

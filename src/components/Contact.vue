@@ -38,7 +38,8 @@
               </div>
 
               <div class="mb-6">
-                  <div id="recaptcha" class="g-recaptcha"></div>
+                  <div id="recaptcha" class="g-recaptcha min-h-[78px]"></div>
+                  <p v-if="recaptchaError" class="text-red-600 text-sm mt-2">{{ recaptchaError }}</p>
               </div>
 
               <div>
@@ -96,51 +97,89 @@
 import { ref, onMounted } from 'vue'
 
 const form = ref({ name: '', email: '', message: '' })
+const recaptchaError = ref('')
 const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY
+const apiUrl = import.meta.env.VITE_API_URL
 
-let recaptchaWidgetId = null;
+let recaptchaWidgetId = null
 
 onMounted(() => {
-  const script = document.createElement("script");
-  script.src = "https://www.google.com/recaptcha/api.js?render=explicit";
-  script.async = true;
-  script.defer = true;
+  if (!document.getElementById('recaptcha')) return
+
+  const script = document.createElement('script')
+  script.src = 'https://www.google.com/recaptcha/api.js?render=explicit'
+  script.async = true
+  script.defer = true
+
   script.onload = () => {
-    recaptchaWidgetId = grecaptcha.render("recaptcha", { sitekey: siteKey });
-  };
-  document.head.appendChild(script);
-});
+    if (window.grecaptcha) {
+      try {
+        recaptchaWidgetId = grecaptcha.render('recaptcha', {
+          sitekey: siteKey,
+        })
+      } catch (err) {
+        console.error('reCAPTCHA render error:', err)
+        recaptchaError.value = 'Could not load reCAPTCHA. Try disabling ad blockers.'
+      }
+    } else {
+      recaptchaError.value = 'reCAPTCHA not loaded.'
+    }
+  }
+
+  script.onerror = () => {
+    recaptchaError.value = 'Failed to load reCAPTCHA. Try disabling ad blockers or refreshing the page.'
+  }
+
+  document.head.appendChild(script)
+
+  setTimeout(() => {
+    if (!window.grecaptcha) {
+      recaptchaError.value = 'reCAPTCHA failed to load. Check your connection or disable extensions.'
+    }
+  }, 5000)
+})
 
 const submitForm = async () => {
-  
+  recaptchaError.value = ''
+
   if (recaptchaWidgetId === null) {
-    alert('reCAPTCHA not ready yet. Please wait and try again.')
+    recaptchaError.value = 'reCAPTCHA not ready. Please wait or refresh the page.'
     return
   }
-  const token = grecaptcha.getResponse(recaptchaWidgetId);
+
+  const token = grecaptcha.getResponse(recaptchaWidgetId)
   if (!token) {
-    alert('Please complete the reCAPTCHA.')
+    recaptchaError.value = 'Please complete the reCAPTCHA.'
     return
   }
 
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/api/contact`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      name: form.value.name,
-      email: form.value.email,
-      message: form.value.message,
-      recaptcha: token,
-    }),
-  })
+  try {
+    const response = await fetch(`${apiUrl}/api/contact`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: form.value.name,
+        email: form.value.email,
+        message: form.value.message,
+        recaptcha: token,
+      }),
+    })
 
-  const data = await response.json()
-  if (response.ok) {
-    alert(data.message)
-    form.value = { name: '', email: '', message: '' }
-    grecaptcha.reset(recaptchaWidgetId)
-  } else {
-    alert(data.message || 'Submission failed')
+    const data = await response.json()
+
+    if (response.ok) {
+      alert(data.message)
+      form.value = { name: '', email: '', message: '' }
+      grecaptcha.reset(recaptchaWidgetId)
+    } else {
+      const errorMsg = data.errors
+        ? Object.entries(data.errors).map(([k, v]) => `${k}: ${v.join(', ')}`).join('\n')
+        : data.message || 'Submission failed'
+      alert(errorMsg)
+    }
+  } catch (err) {
+    console.error('Submission error:', err)
+    alert('An error occurred. Please try again later.')
   }
 }
 </script>
