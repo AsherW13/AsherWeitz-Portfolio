@@ -98,19 +98,26 @@ import { ref, onMounted } from 'vue'
 const form = ref({ name: '', email: '', message: '' })
 const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY
 
+let recaptchaWidgetId = null;
+
 onMounted(() => {
-  const script = document.createElement('script')
-  script.src = "https://www.google.com/recaptcha/api.js?render=explicit"
-  script.async = true
-  script.defer = true
+  const script = document.createElement("script");
+  script.src = "https://www.google.com/recaptcha/api.js?render=explicit";
+  script.async = true;
+  script.defer = true;
   script.onload = () => {
-    grecaptcha.render('recaptcha', { sitekey: siteKey })
-  }
-  document.head.appendChild(script)
-})
+    recaptchaWidgetId = grecaptcha.render("recaptcha", { sitekey: siteKey });
+  };
+  document.head.appendChild(script);
+});
 
 const submitForm = async () => {
-  const token = grecaptcha.getResponse()
+  
+  if (recaptchaWidgetId === null) {
+    alert('reCAPTCHA not ready yet. Please wait and try again.')
+    return
+  }
+  const token = grecaptcha.getResponse(recaptchaWidgetId);
   if (!token) {
     alert('Please complete the reCAPTCHA.')
     return
@@ -131,7 +138,7 @@ const submitForm = async () => {
   if (response.ok) {
     alert(data.message)
     form.value = { name: '', email: '', message: '' }
-    grecaptcha.reset()
+    grecaptcha.reset(recaptchaWidgetId)
   } else {
     alert(data.message || 'Submission failed')
   }
