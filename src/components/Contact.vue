@@ -38,8 +38,12 @@
               </div>
 
               <div class="mb-6">
-                  <div id="recaptcha" class="g-recaptcha min-h-[78px]"></div>
-                  <p v-if="recaptchaError" class="text-red-600 text-sm mt-2">{{ recaptchaError }}</p>
+                <div
+                  class="g-recaptcha"
+                  :data-sitekey="siteKey"
+                  style="min-height: 78px"
+                ></div>
+                <p v-if="recaptchaError" class="text-red-600 text-sm mt-2">{{ recaptchaError }}</p>
               </div>
 
               <div>
@@ -94,60 +98,22 @@
 
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 
 const form = ref({ name: '', email: '', message: '' })
 const recaptchaError = ref('')
 const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY
 const apiUrl = import.meta.env.VITE_API_URL
 
-let recaptchaWidgetId = null
-
-onMounted(() => {
-  if (!document.getElementById('recaptcha')) return
-
-  const script = document.createElement('script')
-  script.src = 'https://www.google.com/recaptcha/api.js?render=explicit'
-  script.async = true
-  script.defer = true
-
-  script.onload = () => {
-    if (window.grecaptcha) {
-      try {
-        recaptchaWidgetId = grecaptcha.render('recaptcha', {
-          sitekey: siteKey,
-        })
-      } catch (err) {
-        console.error('reCAPTCHA render error:', err)
-        recaptchaError.value = 'Could not load reCAPTCHA. Try disabling ad blockers.'
-      }
-    } else {
-      recaptchaError.value = 'reCAPTCHA not loaded.'
-    }
-  }
-
-  script.onerror = () => {
-    recaptchaError.value = 'Failed to load reCAPTCHA. Try disabling ad blockers or refreshing the page.'
-  }
-
-  document.head.appendChild(script)
-
-  setTimeout(() => {
-    if (!window.grecaptcha) {
-      recaptchaError.value = 'reCAPTCHA failed to load. Check your connection or disable extensions.'
-    }
-  }, 5000)
-})
-
 const submitForm = async () => {
   recaptchaError.value = ''
 
-  if (recaptchaWidgetId === null) {
-    recaptchaError.value = 'reCAPTCHA not ready. Please wait or refresh the page.'
+  if (typeof grecaptcha === 'undefined') {
+    recaptchaError.value = 'reCAPTCHA not loaded. Please refresh the page.'
     return
   }
 
-  const token = grecaptcha.getResponse(recaptchaWidgetId)
+  const token = grecaptcha.getResponse()
   if (!token) {
     recaptchaError.value = 'Please complete the reCAPTCHA.'
     return
@@ -170,7 +136,7 @@ const submitForm = async () => {
     if (response.ok) {
       alert(data.message)
       form.value = { name: '', email: '', message: '' }
-      grecaptcha.reset(recaptchaWidgetId)
+      grecaptcha.reset() // reset widget after successful submission
     } else {
       const errorMsg = data.errors
         ? Object.entries(data.errors).map(([k, v]) => `${k}: ${v.join(', ')}`).join('\n')
