@@ -19,11 +19,11 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY')
 
-CORS(app)
+CORS(app, origins=["https://asherweitz-portfolio.netlify.app"])
 
 limiter = Limiter(get_remote_address, app=app, default_limits=["2 per hour"])
 
-csrf = CSRFProtect(app, origins=["https://asherweitz-portfolio.netlify.app"])
+csrf = CSRFProtect(app)
 
 @csrf.exempt
 @app.route("/api/contact", methods=["POST"])
